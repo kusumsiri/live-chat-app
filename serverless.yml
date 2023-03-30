@@ -1,0 +1,51 @@
+# serverless.yml - Live Chat App
+
+service: live-chat-app
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  region: us-east-1
+  runtime: nodejs18.x
+  iam:	
+    role:
+      arn:aws:iam::xxxxxxxxxxxx:role/your-own-iam-role      
+  deploymentMethod: direct
+  stage: dev
+  stackName: ${sls:stage}-live-chat-app-stack
+  logRetentionInDays: 1
+  deploymentBucket:
+    name: live-chat-app-bucket # Previously created S3 bucket
+    maxPreviousDeploymentArtifacts: 0
+    skipPolicySetup: true
+
+  websocketsApiName: my-websockets-api
+  websocketsApiRouteSelectionExpression: $request.body.action
+  websocketsDescription: Custom Serverless Websockets
+
+functions:
+  live-chat-app:
+    name: live-chat-app # Lambda name
+    description: Live Chat App
+    handler: live-chat.handler
+    memorySize: 128
+    logRetentionInDays: 1
+    environment:
+      WEBSOCKET_ENDPOINT : ${cf:${self:provider.stackName}.ServiceEndpointWebsocket} 
+
+    layers:	
+      - arn:aws:lambda:us-east-1:xxxxxxxxxxxx:layer:your-own-layer:layer-version-number
+    events:
+      - websocket:
+          route: $connect
+      - websocket:
+          route: $disconnect
+      - websocket:
+          route: $default
+      - websocket:
+          route: setName
+      - websocket:
+          route: sendPublic
+      - websocket:
+          route: sendPrivate
