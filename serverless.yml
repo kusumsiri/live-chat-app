@@ -35,7 +35,7 @@ functions:
       WEBSOCKET_ENDPOINT : ${cf:${self:provider.stackName}.ServiceEndpointWebsocket} 
 
     layers:	
-      - arn:aws:lambda:us-east-1:xxxxxxxxxxxx:layer:your-own-layer:layer-version-number
+      - arn:aws:lambda:us-east-1:xxxxxxxxxxxx:layer:your-own-layer:version-number
     events:
       - websocket:
           route: $connect
